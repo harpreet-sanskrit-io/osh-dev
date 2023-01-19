@@ -49,7 +49,7 @@
        <!-- Nav bar -->
        <Nav  {drawerContentScrollY}  fixedsidebar='{!$page.url.pathname}' />
        <!--Content-->
-       <div class="w-full min-h-full from-primary to-secondary bg-gradient-to-r  -mt-16 pt-20 pb-2 px-2">
+       <div class="w-full min-h-full bg-primary  -mt-16 py-16">
        <slot/>
        </div>
        <!--Footer-->
