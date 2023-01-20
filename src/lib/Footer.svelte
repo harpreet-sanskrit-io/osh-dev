@@ -33,7 +33,7 @@
 
 
     <div class="flex flex-col items-center" on:click="{() => {goto('/login/')}   }">
-        <div class="absolute bottom-4 right-4 shadow-2xl text-center flex items-center justify-center rounded-full w-8 h-8 p-0 text-white transition ease-in duration-200 hover:text-blue-400 text-red-400"
+        <div class="absolute bottom-4 right-6 shadow-2xl text-center flex items-center justify-center rounded-full w-8 h-8 p-0 text-white transition ease-in duration-200 hover:text-blue-400 text-red-400"
         class:text-green-600="{$db.email.length > 0}"
         >
         

@@ -1,12 +1,40 @@
+<div class="flex">
+  <div class="flex-col flex ml-auto mr-auto items-center w-full lg:w-2/3 md:w-3/5 gap-y-3">
+
+
+<div class="form-control">
+  <label class="input-group input-group-sm">
+    <span class="w-24"><Icon src="{LightningBolt}" theme="solid" class="color-gray-900" /></span>
+    <input type="text" placeholder="email" class="input input-bordered input-sm" bind:value={email} disabled="{$db.email.length > 0 }"/>
+  </label>
+</div>
+<!---->
+<div class="form-control" class:hidden="{$db.email}">
+  <label class="input-group input-group-sm">
+      <span class="label-text w-24">Password</span>
+      <input type="text" placeholder="password" class="input input-bordered input-sm" bind:value={password} />
+  </label>
+</div>
+<!---->
+<div class="form-control">
+  <button class="btn btn-secondary" on:click="{logout}" class:hidden="{! $db.email}">Logout</button>
+  <button class="btn btn-primary" on:click="{login}" class:hidden="{$db.email}">Login</button>
+</div>
+</div>
+</div>
+
+
+
+
 <script>
     import { db } from "$lib/db"
+    import { Icon } from '@steeze-ui/svelte-icon'
+    import { LightningBolt } from '@steeze-ui/heroicons'
 
-    let email = $db.email;
-    let password = "12345678";
-    let showRegister = false;
-    let cpassword = "";
-
-
+    // variables
+    let email = $db.email
+    let password = "12345678"
+    // Functions
     async function login() {
         await db.signin({
             NS: 'main',
@@ -15,84 +43,10 @@
             email: email,
             pass: password,
         }
-        );
+        )
     }
-
-    async function register() {
-      if (cpassword != password) {
-        console.info("Password not matched.");
-        return;
-      }
-        try {
-        await db.signup({
-            NS: 'main',
-            DB: 'main',
-            SC: 'users',
-            email: email,
-            pass: password,
-        }
-        );
-        hidereg();
-        } catch(e){
-          console.error(e);
-        }
-    }
-
+    // Functions
     async function logout() {
-        await db.signout();
+        await db.signout()
     }
-
-    function showreg(){
-      showRegister = true;
-    }
-
-    function hidereg(){
-      showRegister = false;
-    }
-
 </script>
-<div class="hero min-h-screen bg-base-200">
-    <div class="hero-content text-center">
-        <div class="max-w-md">
-            <h1 class="text-3xl font-bold">Welcome to Vault@zero !</h1>
-            <p class="py-4">Register, Login, Logout here.</p>
-            <div class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
-                <div class="card-body">
-                    <div class="form-control">
-                        <label class="label">
-            <span class="label-text">Email</span>
-          </label>
-                        <input type="text" placeholder="email" class="input input-bordered" bind:value={email} disabled="{$db.email.length > 0 }"/>
-                    </div>
-                    <div class="form-control" class:hidden="{$db.email}">
-                        <label class="label">
-            <span class="label-text">Password</span>
-          </label>
-                        <input type="text" placeholder="password" class="input input-bordered" bind:value={password} />
-          <label class="label" class:hidden={showRegister}>
-            <span on:click="{showreg}" class="label-text-alt link link-hover text-base link-accent">New? Register here.</span>
-          </label>
-                    </div>
-                    {#if showRegister}
-                    <div class="form-control">
-                        <label class="label">
-            <span class="label-text">Confirm Password</span>
-          </label>
-                        <input type="text" placeholder="password" class="input input-bordered" bind:value={cpassword} />
-          <label class="label" class:hidden={!showRegister}>
-            <span on:click="{hidereg}" class="label-text-alt link link-hover text-base link-accent">Already regitered? Login here.</span>
-          </label>
-                    </div>
-                    {/if}
-                    <div class="form-control mt-6">
-
-                        <button class="btn btn-secondary" on:click="{logout}" class:hidden="{! $db.email}">Logout</button>                         
-                        <button class="btn btn-accent" on:click="{register}"   class:hidden="{!showRegister}">Register</button> 
-                        <button class="btn btn-primary" on:click="{login}"   class:hidden="{showRegister || $db.email}">Login</button> 
-                         
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
