@@ -1,6 +1,7 @@
 <script>
     import { db } from "$lib/db"
     import { onMount } from "svelte"
+    import Nav from "$lib/Nav.svelte"
     let data = []
     let _d = {}
     let table = "company"
@@ -75,9 +76,9 @@
   })
 
 </script>
-
+<Nav title="Admin" back="/" top/>
  <!-- Report -->
- <ul class="menu bg-base-100 w-full p-2">
+ <ul class="menu bg-base-100 w-full p-2" class:hidden="{data.length===0}">
  {#each data as d (d.id)}
   <li>
     <a>

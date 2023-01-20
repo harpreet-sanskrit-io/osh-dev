@@ -6,23 +6,29 @@
 
 
 
-<div class="sticky bottom-2  p-5 px-6 m-2   flex items-center justify-between   bg-gray-900 shadow-3xl text-gray-400 rounded-2xl cursor-pointer">
-    
-    <div class="flex flex-col items-center transition ease-in duration-200 hover:text-blue-400 ">
+<div class="sticky bottom-0  p-3 m-0  z-30  flex items-center justify-between   bg-primary  text-base-100 cursor-pointer">
+    <div class="flex flex-col items-center transition ease-in duration-200 hover:text-accent-focus ">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14v6m-3-3h6M6 10h2a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2zm10 0h2a2 2 0 002-2V6a2 2 0 00-2-2h-2a2 2 0 00-2 2v2a2 2 0 002 2zM6 20h2a2 2 0 002-2v-2a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2z">
             </path>
         </svg>
     </div>
     
-    <div class="flex flex-col items-center transition ease-in duration-200 hover:text-blue-400 ">
+    <div class="flex flex-col items-center transition ease-in duration-200 hover:text-accent-focus ">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14v6m-3-3h6M6 10h2a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2zm10 0h2a2 2 0 002-2V6a2 2 0 00-2-2h-2a2 2 0 00-2 2v2a2 2 0 002 2zM6 20h2a2 2 0 002-2v-2a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2z">
+            </path>
+        </svg>
+    </div>
+    
+    <div class="flex flex-col items-center transition ease-in duration-200 hover:text-accent-focus ">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
         </svg>
     </div>
     
 
-            <div class="flex flex-col items-center transition ease-in duration-200 hover:text-blue-400 ">
+            <div on:click="{() => {goto('/_admin/company/')}   }" class="flex flex-col items-center transition ease-in duration-200 hover:text-accent-focus ">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path>
         </svg>
@@ -32,23 +38,8 @@
  
 
 
-    <div class="flex flex-col items-center" on:click="{() => {goto('/login/')}   }">
-        <div class="absolute bottom-4 right-6 shadow-2xl text-center flex items-center justify-center rounded-full w-8 h-8 p-0 text-white transition ease-in duration-200 hover:text-blue-400 text-red-400"
-        class:text-green-600="{$db.email.length > 0}"
-        >
-        
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z">
-            </path>
-        </svg>
-      
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full border-4 opacity-50"
-            class:hidden="{$db.email.length > 0}"
-            ></span>
-        
-        
-        </div>
-    </div>
+
+
 
 
 </div>

@@ -37,7 +37,7 @@
 
 
 
-<div class="bg-base-100 drawer" class:drawer-mobile="{!$page.url.pathname}">
+<div class="bg-secondary-content drawer min-h-full" class:drawer-mobile="{!$page.url.pathname}">
   <input id="my-drawer-3" type="checkbox" class="drawer-toggle" bind:checked />
   <!-- drawer content-->
   <div 
@@ -47,20 +47,22 @@
      
   >
        <!-- Nav bar -->
-       <Nav  {drawerContentScrollY}  fixedsidebar='{!$page.url.pathname}' />
+       <Nav />
        <!--Content-->
-       <div class="w-full min-h-full bg-primary  -mt-16 py-16">
+       <div class="w-full min-h-[90%]">
        <slot/>
        </div>
        <!--Footer-->
        
        <Footer/>
   </div>
-  <!--Drawer Side-->
+  <!--Drawer Side
   <div class="drawer-side scroll-smooth">
     <label for="my-drawer-3" class="drawer-overlay"></label> 
     <Sidemenu {closeDrawer}/>    
   </div>
+
+  -->
 
 </div>
 
