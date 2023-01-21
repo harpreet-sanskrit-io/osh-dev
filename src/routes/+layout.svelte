@@ -4,6 +4,7 @@
 
   import Nav from "$lib/Nav.svelte"
   import Footer from "$lib/Footer.svelte"
+  import Surreal from "$lib/Surreal.svelte"
   import Sidemenu from "$lib/Sidemenu.svelte"
   import { page } from '$app/stores';
   import "../app.css";
@@ -37,7 +38,7 @@
 
 
 
-<div class="bg-secondary-content drawer min-h-full" class:drawer-mobile="{!$page.url.pathname}">
+<div class="bg-accent-content drawer min-h-full" class:drawer-mobile="{!$page.url.pathname}">
   <input id="my-drawer-3" type="checkbox" class="drawer-toggle" bind:checked />
   <!-- drawer content-->
   <div 
@@ -50,6 +51,7 @@
        <Nav />
        <!--Content-->
        <div class="w-full min-h-[90%]">
+       <Surreal/>
        <slot/>
        </div>
        <!--Footer-->
