@@ -38,7 +38,7 @@
 
 
 
-<div class="bg-accent-content drawer min-h-full" class:drawer-mobile="{!$page.url.pathname}">
+<div class="bg-base-200 drawer min-h-full" class:drawer-mobile="{!$page.url.pathname}">
   <input id="my-drawer-3" type="checkbox" class="drawer-toggle" bind:checked />
   <!-- drawer content-->
   <div 
@@ -50,12 +50,12 @@
        <!-- Nav bar -->
        <Nav />
        <!--Content-->
-       <div class="w-full min-h-[90%]">
-       <Surreal/>
+       <div class="w-full min-h-[90%] mt-12">
+       
        <slot/>
        </div>
        <!--Footer-->
-       
+       <Surreal/>
        <Footer/>
   </div>
   <!--Drawer Side
