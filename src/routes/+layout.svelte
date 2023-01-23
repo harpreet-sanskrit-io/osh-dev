@@ -8,6 +8,9 @@
   import Sidemenu from "$lib/Sidemenu.svelte"
   import { page } from '$app/stores';
   import "../app.css";
+  //
+  //Object.values
+  // 
 
   let drawercontent
   let drawerContentScrollY = 0
@@ -38,7 +41,7 @@
 
 
 
-<div class="bg-base-200 drawer min-h-full" class:drawer-mobile="{!$page.url.pathname}">
+<div class="bg-accent drawer min-h-full" class:drawer-mobile="{!$page.url.pathname}">
   <input id="my-drawer-3" type="checkbox" class="drawer-toggle" bind:checked />
   <!-- drawer content-->
   <div 

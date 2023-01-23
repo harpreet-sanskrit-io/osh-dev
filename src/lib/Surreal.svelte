@@ -1,123 +1,160 @@
 <script>
     import Hicon from "$lib/Hicon.svelte"
-    let show = false;
-
-    let url = "https://zero-app.fly.dev/sql";
-    let user = "root";
-    let creds = "signalzero";
-
-    let ns = "main";
-    let db = "main";
-
-    let tab = 1;
-    let command = "INFO FOR KV; INFO FOR NS; INFO FOR DB; SELECT * FROM USER;";
-    let result = "";
-    let status = "";
-
-    let progress = false;
+    import Sdbcon from "$lib/components/si/Sdbcon.svelte"
+    import { setContext } from 'svelte'
+    import { writable } from 'svelte/store'
 
 
+    let show = true;
+    let show_con = true;
+    let show_c_form = false;
+    let c_form = {};
+    let add_c = false;
 
-    function timeout(s) {
-        return new Promise(resolve => setTimeout(resolve, s * 1000));
+
+     let activeTab = writable({type:"playtab", name:"tab1", connection:"zero"}) ;
+
+     let connections = writable({
+                 zero: {
+                   name: "zero",
+                   url:"zero-app.fly.dev",
+                   user: "root",
+                   creds: "signalzero",
+                   ns: "main",
+                   db: "main",
+                   playtab:{
+                       tab1: { name:"tab1", input:"select * FROM user;" , result:""},
+                       tab2: { name:"tab2", input:"INFO FOR DB;" , result:""},
+                   } ,        
+                 },
+                 sanskrit: {
+                   name: "sanskrit",
+                   url:"sanskrit-io.fly.dev",
+                   user: "root",
+                   creds: "signalzero",
+                   ns: "main",
+                   db: "main", 
+                   playtab:{
+                       tab1: {  name:"tab1", input:"select * FROM user;" , result:""},
+                       tab2: {  name:"tab2", input:"INFO FOR DB;" , result:""},
+                   } ,                           
+                 }, 
+                                                     
+            }
+        );
+ 
+    function editC(){
+       $connections[c_form.name]   = {...c_form, ...$connections[c_form.name]}    
+       $connections =  $connections;
     }
 
-    async function run() {
-        result = "";
-        progress = true;
-        status = '#Running: ' + command;
-        tab = 3;
-        // await timeout(3);
-        try {
-            console.info("Calling CLI");
-            let res = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'NS': ns,
-                    'DB': db,
-                    'Authorization': 'Basic ' + btoa(user + ":" + creds),
-                    'Content-Type': 'text/plain'
-                },
-                body: command
-            });
-
-            console.info("Success: ", res);
-            res.json().then((d) => { result = d });
-            progress = false;
-            status = "Bingo! Check Result Tab for database response.";
-            tab = 2;
-
-        } catch (e) {
-            console.error("Error: ", e);
-            status = e;
-            progress = false;
-            tab = 3;
-
+    function delC(cn){
+        delete $connections[cn];
+        $connections =  $connections;
+        c_form = {};
+        show_c_form = false;
+        if (  cn === $activeTab.connection ){
+            $activeTab = {}
         }
-
+        delete $connections[cn];        
+    }
+    
+    function setEditC(cn){
+       show_c_form = true;
+       add_c = false; 
+       c_form = {...cn};
+    }
+    
+    function setActiveTab(t){
+        $activeTab = {...t}  
     }
 
+    function deleteTab(t){
+        if ( t.type === $activeTab.type && t.connection === $activeTab.connection && t.name === $activeTab.name){
+            $activeTab = {}
+        }
+        delete $connections[t.connection][t.type][t.name];
+        $connections =  $connections;
+
+    }
+    
+    
+      setContext( 'connections', connections );
+      setContext( 'activeTab',  activeTab );
+      setContext('func', {setEditC:setEditC, setActiveTab:setActiveTab, delC:delC, deleteTab:deleteTab});
+    
 </script>
 
 
 {#if show}
-<div class="flex flex-col  fixed top-14  z-50 h-5/6 w-full items-center justify-center">
+<div class="flex flex-row  fixed top-14 z-50 h-5/6 w-full px-4 items-center justify-center">
     
-    <div class="card w-full h-full max-w-4xl bg-secondary-content">
-        
-        <div class="card-body relative w-full h-full">
-            
-            <button on:click="{() => {show=!show}}" class="absolute right-2 top-2 btn btn-primary btn-circle btn-xs btn-outline">
-              <Hicon iname="x_mark" tooltip="Close" />
-            </button>
+    <div class="border-r-2 border-base-300 flex-initial w-64 bg-base-100 h-full" class:w-12="{!show_con}">
+      <div class="h-12 w-full bg-base-200 p-3 flex flex-row flex-nowrap justify-between" class:flex-col="{!show_con}"  class:gap-4="{!show_con}" class:h-20="{!show_con}" >
+          <span class="w-6" on:click="{() => {show_con = !show_con}}"><Hicon iname="surreal" /></span>
+          <span class="w-6" on:click="{()=>{ add_c=true;show_c_form=true;c_form={}; }}"><Hicon iname="plus-circle" /></span>
+      </div> 
+    
+       <div class="w-full h-full text-xs">
+            <Sdbcon/>
+       </div>
+ 
+    
+    </div>
+    
 
-
-            <div class="tabs ">
-                <span on:click="{()=>{tab=4}}" class="tab tab-bordered text-primary" class:tab-active="{tab === 4}"><Hicon iname="surreal" tooltip="Connection Details." /></span>
-              <!--    <span on:click="{()=>{tab=5}}" class="tab tab-bordered text-primary" class:tab-active="{tab === 5}"><Hicon iname="eye" tooltip="Browse DB!"/></span> -->
-                <span on:click="{()=>{tab=1}}" class="tab tab-bordered text-primary" class:tab-active="{tab === 1}"><Hicon iname="command_line" tooltip="Enter Commands."/></span>
-                <span on:click="{()=>{tab=2}}" class="tab tab-bordered text-primary" class:tab-active="{tab === 2}"><Hicon iname="cake" tooltip="Resuts." /></span>
-                <span on:click="{()=>{tab=3}}" class="tab tab-bordered text-primary" class:tab-active="{tab === 3}"><Hicon iname="information_circle" tooltip="Progress" /></span>
-                <span on:click="{run}" class="tab tab-bordered text-primary" class:hidden="{!command}" class:tab-active="{progress}" class:loading="{progress}"><Hicon tooltip="Run!" iname="play"/></span>
-            </div>
-
-            <textarea class:hidden="{tab!=1}"          class="textarea textarea-bordered h-full text-xs scroll-smooth" placeholder="Enter Commands Here." bind:value="{command}"></textarea>
-
-            <textarea class:hidden="{tab!=2}" readonly class="textarea textarea-bordered h-full text-xs scroll-smooth" placeholder="Enter Commands Here." value="{result ? JSON.stringify(result,' ', '\t'): 'Enter commands in Command tab and hit play.'}"></textarea>
-
-            <textarea class:hidden="{tab!=3}" readonly class="textarea textarea-bordered h-full text-xs scroll-smooth" placeholder="Enter Commands Here." value="{status ? progress ? status : JSON.stringify(status,' ', '\t'): 'Errors reaching database will be displyed here.'}"></textarea>
-
-
-
-
-            <div class="flex flex-col gap-1 py-4  w-full max-w-md" class:hidden="{tab!=4}">
-                    <label class="input-group">
-                        <span class="border-r border-red-600"><Hicon iname="surreal" tooltip="URL"/></span>
-                        <input bind:value="{url}" type="text" placeholder="https://db.hosting.com/sql" class="input input-bordered w-full" />
-                    </label>
-
-                    <label class="input-group">
-                      <span class="border-r border-red-600"><Hicon iname="user" tooltip="root or login user"/></span>
-                      <input bind:value="{user}" type="text" placeholder="USER" class="input input-bordered w-full" />
-                    </label>
-
-                    <label class="input-group">
-                        <span class="border-r border-red-600"><Hicon iname="key" tooltip="password"/></span>
-                        <input bind:value="{creds}" type="password" placeholder="PASSWORD"  class="input input-bordered w-full" />
-                    </label>
-
-                    <label class="input-group">
-                       <span class="border-r border-green-600"><Hicon iname="building_office" tooltip="namespace"/></span>
-                        <input bind:value="{ns}" type="text" placeholder="NAMESPACE" class="input input-bordered w-full" />
-                    </label>
-
-                    <label class="input-group">
-                        <span class="border-r border-green-600"><Hicon iname="circle_stack" tooltip="database"/></span>
-                        <input bind:value="{db}" type="text" placeholder="DATABASE"  class="input input-bordered w-full" />
-                    </label>            
-            </div>
+    <div class=" flex-initial w-full h-full bg-base-300" class:hidden="{show_c_form}">
+        <div class="tabs bg-base-100 w-full">
+            <span class="tab tab-lg tab-bordered">{JSON.stringify($activeTab)}</span> 
         </div>
+      <textarea class="h-96 bg-transparent w-full"  value="{JSON.stringify($connections, ' ','\t')}" />   
+    </div>
+
+
+    <div class=" flex-initial w-full h-full bg-base-100"  class:hidden="{!show_c_form}">
+                 <div class="tabs bg-base-100 w-full">
+                     <span class="tab tab-lg tab-bordered">Connection: {c_form.name}</span> 
+                 </div>
+                <div class="flex flex-col gap-1 w-96 max-w-md p-4">
+                    <label class="input-group input-group-sm" class:text-error="{ $connections[c_form.name] && add_c }">
+                        <span class="border-r border-red-600" ><Hicon iname="link" iclass="w-3 h-3" tooltip="Connection name"/></span>
+                        <input  bind:value="{c_form.name}" type="text" placeholder="name" class="input input-bordered w-full input-sm" />
+                    </label>
+                    <label class="input-group input-group-sm">
+                        <span class="border-r border-red-600">https://</span>
+                        <input bind:value="{c_form.url}" type="text" placeholder="db.hosting.com" class="input input-bordered w-full input-sm" />
+                        <span>/sql</span>
+                    </label>
+
+                    <label class="input-group input-group-sm">
+                      <span class="border-r border-red-600"><Hicon iname="user" iclass="w-3 h-3" tooltip="root or login user"/></span>
+                      <input bind:value="{c_form.user}" type="text" placeholder="user" class="input input-bordered w-full input-sm" />
+                    </label>
+
+                    <label class="input-group input-group-sm">
+                        <span class="border-r border-red-600"><Hicon iclass="w-3 h-3" iname="key" tooltip="password"/></span>
+                        <input bind:value="{c_form.creds}" type="password" placeholder="password"  class="input input-bordered w-full input-sm" />
+                    </label>
+
+                    <label class="input-group input-group-sm">
+                       <span class="border-r border-green-600"><Hicon iclass="w-3 h-3" iname="building-office" tooltip="namespace"/></span>
+                        <input bind:value="{c_form.ns}" type="text" placeholder="namespace" class="input input-bordered w-full input-sm" />
+                    </label>
+
+                    <label class="input-group input-group-sm">
+                        <span class="border-r border-green-600"><Hicon iclass="w-3 h-3" iname="circle-stack" tooltip="database"/></span>
+                        <input bind:value="{c_form.db}" type="text" placeholder="database"  class="input input-bordered w-full input-sm" />
+                    </label> 
+                    <div class="w-full p-3 flex flex-row flex-nowrap justify-between">
+                    <button  on:click="{()=>{show_c_form = false; $connections=$connections;}}" class="btn btn-circle bg-transparent border-0">
+                      <Hicon iname="chevron-left" iclass="w-6 h-6"/>
+                    </button>
+
+                    <button  on:click="{editC}" class="btn btn-circle bg-transparent border-0" disabled={ $connections[c_form.name] && add_c }>
+                      <Hicon iname="check-circle" iclass="w-6 h-6"/>
+                    </button>
+                    </div>                             
+                </div>   
     </div>
 </div>
 {:else}
