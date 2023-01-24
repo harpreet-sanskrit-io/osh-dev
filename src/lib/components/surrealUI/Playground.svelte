@@ -21,19 +21,16 @@
      }
      return false
    }
-   function fn_local_expandItems(){
-      if(has_child ){
+   function fn_local_toggleItems(){
          expand=!expand
-         return
-      }
    }
 </script>
 
 
 <span class="flex flex-col w-full">
   <span  on:mouseover="{()=>{hovered=true}}" on:mouseout="{()=>{hovered=false}}" class="flex flex-row flex-nowrap justify-center h-6 items-center space-x-1.5 pr-2 pl-5 hover:bg-base-200"  >
-    <Hicon iname="play" fill="{!expand}" iclass="w-3 h-3" tooltip="toggle playground scripts" />
-      <span on:click="{fn_local_expandItems}" class="w-full cursor-pointer">Playgound</span>
+    <Hicon iname="play" fill="{!expand}" iclass="w-3 h-3 {(expand ? has_child ? 'text-success' : 'text-error' : 'text-info') }" tooltip="toggle playground scripts" />
+      <span on:click="{fn_local_toggleItems}" class="w-full cursor-pointer">Playgound</span>
       <span class="cursor-pointer" on:click="{()=>func.fn_component_addPlayTab(connection)}" class:hidden="{!hovered}">
         <Hicon iname="document-plus" iclass="w-3 h-3" tooltip="+ playground file" />
       </span>      
