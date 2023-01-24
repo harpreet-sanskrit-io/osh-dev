@@ -4,10 +4,10 @@
 
   import Nav from "$lib/Nav.svelte"
   import Footer from "$lib/Footer.svelte"
-  import Surreal from "$lib/Surreal.svelte"
+  import SurrealUI from "$lib/components/surrealUI/SurrealUI.svelte"
   import Sidemenu from "$lib/Sidemenu.svelte"
-  import { page } from '$app/stores';
-  import "../app.css";
+  import { page } from '$app/stores'
+  import "../app.css"
   //
   //Object.values
   // 
@@ -58,7 +58,7 @@
        <slot/>
        </div>
        <!--Footer-->
-       <Surreal/>
+       <SurrealUI/>
        <Footer/>
   </div>
   <!--Drawer Side
