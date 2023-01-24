@@ -1,14 +1,12 @@
 <script>
    import { getContext } from 'svelte';
    import Hicon from "$lib/Hicon.svelte";
-   const connections = getContext( 'connections');
-   const activeTab   = getContext( 'activeTab' );
    const func        = getContext('func');
 
    export let tab = {}
    export let connection = {}
    let hovered = false
-
+  $: console.table(tab)
 </script>
 
 

@@ -4,16 +4,17 @@
     import { setContext } from 'svelte'
     import { writable }   from 'svelte/store'
     import { tick } from 'svelte'
+    let connection_form_state        = writable({})
+    let connection_form_in_add_mode  = writable(false)
 
+
+    let activeTab = writable({type:"playtab", name:"tab1", connection:"zero"})
 
     let show                         = true 
     let show_left_pane               = true 
     let show_connection_form         = false
-    let connection_form_state        = writable({})
-    let connection_form_in_add_mode  = writable(false)
-    let connection_form_name_field
 
-     let activeTab = writable({type:"playtab", name:"tab1", connection:"zero"}) ;
+    let connection_form_name_field 
 
      let connections = writable({
                  zero: {
@@ -61,7 +62,7 @@ $: has_child = Object.keys(connections).length > 0;
       const fn="fn_connection_showEditForm"
       console.info( fn )
       $connection_form_in_add_mode = false
-      show_connection_form        = true
+      show_connection_form         = true
       $connection_form_state       = {...connection} 
       await tick()
       connection_form_name_field.focus()
@@ -85,7 +86,7 @@ $: has_child = Object.keys(connections).length > 0;
     //// Save connection form state
     function fn_connection_save(){
        // UpdaSave Details
-       $connections[$connection_form_state.name]   = {...$connection_form_state, ...$connections[$connection_form_state.name]}    
+       $connections[$connection_form_state.name]   = {...$connection_form_state}    
        // Make it reactive the svelte way
        $connections =  $connections;
        show_connection_form        = false; 
@@ -133,8 +134,6 @@ $: has_child = Object.keys(connections).length > 0;
         $connections =  $connections
     }
     //// Set context
-    setContext( 'connections', connections );
-    setContext( 'activeTab'  , activeTab   );
     setContext( 'func'       , {
                                   setEditC:      fn_connection_showEditForm,
                                   setActiveTab:  setActiveTab,
@@ -144,8 +143,14 @@ $: has_child = Object.keys(connections).length > 0;
                                   fn_component_addPlayTab: fn_component_addPlayTab,
                                }
     );
+    setContext('connection_form_state', connection_form_state);
+    setContext('connection_form_in_add_mode', connection_form_in_add_mode);
 //END////////////////////////////// Package: component //////////////////////////////////////////// 
-$: validConName = ( $connections[$connection_form_state.name] && $connection_form_in_add_mode )  
+$: validConName = ( $connections[$connection_form_state.name] && $connection_form_in_add_mode )
+$: connectionsArr = Object.values($connections)  
+$: console.table(connectionsArr)
+
+$: connection_save_button_disabled = ( $connections[$connection_form_state.name] && $connection_form_in_add_mode )
 </script>
 
 
@@ -156,8 +161,11 @@ $: validConName = ( $connections[$connection_form_state.name] && $connection_for
     <!--Left Pane-->
     <div class="border-r-2 border-base-300 flex-initial w-64 bg-base-100 h-full" class:w-12="{!show_left_pane}">
       <!--Left Pane Header-->
-      <div class="h-12 w-full bg-base-200 p-3 flex flex-row flex-nowrap justify-between" class:flex-col="{!show_left_pane}"  class:gap-4="{!show_left_pane}" class:h-20="{!show_left_pane}" >
-        <span class="w-6" on:click="{fn_component_toggleLeftPane}"><Hicon iname="surreal" /></span>
+      <div class="h-12 w-full bg-base-200 flex flex-row flex-nowrap justify-between items-center px-2" class:flex-col="{!show_left_pane}"  class:gap-4="{!show_left_pane}" class:h-20="{!show_left_pane}" >
+        <span class="flex flex-row flex-nowrap justify-between items-center w-full text-sm space-x-1.5" on:click="{fn_component_toggleLeftPane}">
+            <Hicon iname="surreal" />
+            <span class="w-full">DBA</span>
+        </span>
         <span class:hidden="{show_connection_form}" class="w-6" on:click="{fn_connection_showAddForm}"><Hicon iname="plus-circle" /></span>
       </div>
       <!--End: Left Pane Header--> 
@@ -191,7 +199,7 @@ $: validConName = ( $connections[$connection_form_state.name] && $connection_for
             </div>                         
             <div class="space-x-2 w-full flex flex-row flex-nowrap justify-end items-center h-8">
 
-                    <button  on:click="{()=>{fn_connection_delete($connection_form_state.name)}}" class="btn btn-xs btn-circle bg-transparent border-0">
+                    <button class:hidden="{$connection_form_in_add_mode}" on:click="{()=>{fn_connection_delete($connection_form_state.name)}}" class="btn btn-xs btn-circle bg-transparent border-0">
                       <Hicon iname="trash" iclass="w-3 h-3 text-error"/>
                     </button>
 
@@ -199,15 +207,15 @@ $: validConName = ( $connections[$connection_form_state.name] && $connection_for
                       <Hicon iname="x-mark" iclass="w-3 h-3 text-error"/>
                     </button>
 
-                    <button  on:click="{fn_connection_save}" class="btn btn-circle btn-xs bg-transparent border-0" disabled={ $connections[$connection_form_state.name] && $connection_form_in_add_mode }>
-                      <Hicon iname="check" iclass="w-3 h-3 text-info"/>
+                    <button  on:click="{fn_connection_save}" class="btn btn-circle btn-xs bg-transparent border-0" disabled={ connection_save_button_disabled }>
+                      <Hicon iname="check" iclass="w-3 h-3 {connection_save_button_disabled ? 'text-error':'text-info'}"/>
                     </button>
             </div> 
           </div>
           <!--End of Connection form-->
           <!--Paint Children-->
           {#if has_child }
-            {#each Object.values($connections) as connection (connection.name)}
+            {#each connectionsArr as connection (connection.name)}
               <Connection {connection}/>
             {/each}
           {/if}
@@ -225,7 +233,7 @@ $: validConName = ( $connections[$connection_form_state.name] && $connection_for
         </div>
       <div class="flex flex-row justify-center items-center h-5/6">
       <textarea class="h-full w-1/2 bg-transparent"  value="{JSON.stringify($connection_form_state, ' ','\t')}" />  
-      <textarea class="h-full w-1/2 bg-transparent"  value="{JSON.stringify($connections, ' ','\t')}" />   
+      <textarea class="h-full w-1/2 bg-transparent"  value="{JSON.stringify(connectionsArr, ' ','\t')}" />   
       </div>
     </div>
 

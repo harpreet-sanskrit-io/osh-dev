@@ -2,8 +2,7 @@
    import { getContext }                          from 'svelte';
    import Hicon                                   from "$lib/Hicon.svelte"
    import PlaygroundTab                           from "$lib/components/surrealUI/PlaygroundTab.svelte"
-   const connections = getContext( 'connections');
-   const activeTab   = getContext( 'activeTab' );
+
    const func        = getContext('func');
 
    export let connection = {}
@@ -24,6 +23,7 @@
    function fn_local_toggleItems(){
          expand=!expand
    }
+   $: console.table(Object.values(connection.playtab))
 </script>
 
 
