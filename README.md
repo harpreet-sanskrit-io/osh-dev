@@ -1,9 +1,6 @@
-# Zero App
+# Stack
 
-# Sveltekit
-
-# SurrealDB
-
-# Tailwind
-
-# DaisyUI
+Sveltekit
+SurrealDB
+Tailwind
+DaisyUI
