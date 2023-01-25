@@ -1,3 +1,9 @@
-# osh-dev
+# Zero App
 
-[Edit on StackBlitz ⚡️](https://stackblitz.com/edit/osh)
+# Sveltekit
+
+# SurrealDB
+
+# Tailwind
+
+# DaisyUI
