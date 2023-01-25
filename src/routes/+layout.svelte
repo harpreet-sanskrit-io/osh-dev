@@ -41,7 +41,7 @@
 
 
 
-<div class="bg-accent drawer min-h-full" class:drawer-mobile="{!$page.url.pathname}">
+<div class="bg-base-300 drawer min-h-full" class:drawer-mobile="{!$page.url.pathname}">
   <input id="my-drawer-3" type="checkbox" class="drawer-toggle" bind:checked />
   <!-- drawer content-->
   <div 

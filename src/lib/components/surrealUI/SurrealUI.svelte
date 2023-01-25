@@ -4,17 +4,18 @@
     import { setContext } from 'svelte'
     import { writable }   from 'svelte/store'
     import { tick } from 'svelte'
+
     let connection_form_state        = writable({})
     let connection_form_in_add_mode  = writable(false)
-
-
     let activeTab = writable({type:"playtab", name:"tab1", connection:"zero"})
-
     let show                         = true 
     let show_left_pane               = true 
     let show_connection_form         = false
-
+    const playgroundNodeName         = "playground"
     let connection_form_name_field 
+
+
+
 
      let connections = writable({
                  zero: {
@@ -24,24 +25,8 @@
                    creds: "signalzero",
                    ns: "main",
                    db: "main",
-                   playtab:{
-                       tab1: { name:"tab1", input:"select * FROM user;" , result:""},
-                       tab2: { name:"tab2", input:"INFO FOR DB;" , result:""},
-                   } ,        
-                 },
-                 sanskrit: {
-                   name: "sanskrit",
-                   url:"sanskrit-io.fly.dev",
-                   user: "root",
-                   creds: "signalzero",
-                   ns: "main",
-                   db: "main", 
-                   playtab:{
-                       tab1: {  name:"tab1", input:"select * FROM user;" , result:""},
-                       tab2: {  name:"tab2", input:"INFO FOR DB;" , result:""},
-                   } ,                           
-                 }, 
-                                                     
+                     
+                 }                           
             }
         );
 // Made reactive
@@ -53,7 +38,9 @@ $: has_child = Object.keys(connections).length > 0;
       console.info( fn )
       $connection_form_in_add_mode = true
       show_connection_form        = true
-      $connection_form_state       = {} 
+      $connection_form_state       = { name:""
+      
+      } 
       await tick()
       connection_form_name_field.focus()
     }
@@ -112,43 +99,43 @@ $: has_child = Object.keys(connections).length > 0;
         $activeTab = {...t}  
     }
     //// Delete playground file
-    function fn_component_deletePlayTab(tab,connection){
-        const tabType = 'playtab'
-        delete $connections[connection.name][tabType][tab.name]
+    function fn_playground_deleteTab(playgroundTab_key,connection_key){
+        delete $connections[connection_key][playgroundNodeName][playgroundTab_key]
         $connections =  $connections;
     }
     //// Add new playground file/tab
-    function fn_component_addPlayTab(connection){
-        const tabType = 'playtab'
-        if(! $connections[connection.name][tabType]) {
-          $connections[connection.name][tabType] = {}
+    function fn_playground_addTab(connection_key){
+        if(! $connections[connection_key][playgroundNodeName]) {
+          $connections[connection_key][playgroundNodeName] = {}
         }
         
-        $connections[connection.name][tabType]["tab3"] = {  name:"tab3", input:"select * FROM user;" , result:""}
+        $connections[connection_key][playgroundNodeName]["tab3"] = {   input:"INFO FOR DB;" , result:"Nothing executed yet."}
         $connections =  $connections;
     }
-    //// Delete Playgroung
-    function fn_component_deletePlayTabs(connection){
-        const tabType = 'playtab'
-        $connections[connection.name][tabType] = {}
+    //// Delete All Tabs in Playground
+    function fn_playground_deleteAllTabs(connection_key){
+        $connections[connection_key][playgroundNodeName] = {}
         $connections =  $connections
     }
     //// Set context
     setContext( 'func'       , {
-                                  setEditC:      fn_connection_showEditForm,
-                                  setActiveTab:  setActiveTab,
-                                  delC:          fn_connection_delete,
-                                  fn_component_deletePlayTabs: fn_component_deletePlayTabs,
-                                  fn_component_deletePlayTab:  fn_component_deletePlayTab,
-                                  fn_component_addPlayTab: fn_component_addPlayTab,
+                                  fn_connection_showEditForm:      fn_connection_showEditForm,
+                                  setActiveTab:                    setActiveTab,
+                                  delC:                            fn_connection_delete,
+                                  fn_playground_deleteAllTabs:     fn_playground_deleteAllTabs,
+                                  fn_playground_deleteTab:         fn_playground_deleteTab,
+                                  fn_playground_addTab:            fn_playground_addTab,
                                }
     );
     setContext('connection_form_state', connection_form_state);
+    setContext('playgroundNodeName', playgroundNodeName);
+    playgroundNodeName
     setContext('connection_form_in_add_mode', connection_form_in_add_mode);
 //END////////////////////////////// Package: component //////////////////////////////////////////// 
-$: validConName = ( $connections[$connection_form_state.name] && $connection_form_in_add_mode )
+$: validConName = ( $connection_form_state.name === ""  && !$connections[$connection_form_state.name] && $connection_form_in_add_mode )
 $: connectionsArr = Object.values($connections)  
 $: console.table(connectionsArr)
+$: connectionsEntries = Object.entries($connections)
 
 $: connection_save_button_disabled = ( $connections[$connection_form_state.name] && $connection_form_in_add_mode )
 </script>
@@ -173,27 +160,27 @@ $: connection_save_button_disabled = ( $connections[$connection_form_state.name]
         <div class="w-full h-full text-xs" >
           <!--Connection form-->
           <div class="flex flex-col w-full bg-base-300" class:hidden="{!show_connection_form}">
-            <div class="flex flex-row flex-nowrap justify-center h-6 items-center space-x-3 w-full pl-3">
-              <Hicon iname="surreal" iclass="w-3 h-3 { validConName ? 'text-success':'text-error' }"/>
+            <div class="flex flex-row flex-nowrap justify-center h-6 items-center space-x-3 w-full pl-3 border-l-2 { validConName ? 'border-success':'border-error' }" >
+              <Hicon iname="surreal" iclass="w-3 h-3"/>
               <input bind:this="{connection_form_name_field}" bind:value="{$connection_form_state.name}" type="text" placeholder="name" class="input rounded-none w-full input-xs" />
             </div>
-            <div class="flex flex-row flex-nowrap justify-center h-6 items-center space-x-3 w-full pl-3">
+            <div class="flex flex-row flex-nowrap justify-center h-6 items-center space-x-3 w-full pl-3 border-l-2 { $connection_form_state.url ? 'border-success':'border-error' }">
               <Hicon iname="cloud" iclass="w-3 h-3"/>
               <input bind:value="{$connection_form_state.url}" type="text" placeholder="db.hosting.com" class="input rounded-none w-full input-xs" />
             </div>
-            <div class="flex flex-row flex-nowrap justify-center h-6 items-center space-x-3 w-full pl-3">
+            <div class="flex flex-row flex-nowrap justify-center h-6 items-center space-x-3 w-full pl-3 border-l-2 { $connection_form_state.user ? 'border-success':'border-error' }">
               <Hicon iname="user" iclass="w-3 h-3"/>
               <input bind:value="{$connection_form_state.user}" type="text" placeholder="user" class="input rounded-none w-full input-xs" />
             </div>            
-            <div class="flex flex-row flex-nowrap justify-center h-6 items-center space-x-3 w-full pl-3">
+            <div class="flex flex-row flex-nowrap justify-center h-6 items-center space-x-3 w-full pl-3 border-l-2 { $connection_form_state.password ? 'border-success':'border-error' }">
               <Hicon iname="key" iclass="w-3 h-3"/>
               <input bind:value="{$connection_form_state.creds}" type="password" placeholder="password"  class="input rounded-none w-full input-xs" />
             </div>
-            <div class="flex flex-row flex-nowrap justify-center h-6 items-center space-x-3 w-full pl-3">
+            <div class="flex flex-row flex-nowrap justify-center h-6 items-center space-x-3 w-full pl-3 border-l-2 border-success">
               <Hicon iname="building-office" iclass="w-3 h-3 text-success"/>
               <input bind:value="{$connection_form_state.ns}" type="text" placeholder="namespace" class="input rounded-none w-full input-xs" />
             </div>   
-            <div class="flex flex-row flex-nowrap justify-center h-6 items-center space-x-3 w-full pl-3">
+            <div class="flex flex-row flex-nowrap justify-center h-6 items-center space-x-3 w-full pl-3 border-l-2 border-success">
               <Hicon iname="circle-stack" iclass="w-3 h-3 text-success"/>
               <input bind:value="{$connection_form_state.db}" type="text" placeholder="database"  class="input rounded-none w-full input-xs" />
             </div>                         
@@ -215,8 +202,8 @@ $: connection_save_button_disabled = ( $connections[$connection_form_state.name]
           <!--End of Connection form-->
           <!--Paint Children-->
           {#if has_child }
-            {#each connectionsArr as connection (connection.name)}
-              <Connection {connection}/>
+            {#each connectionsEntries as connection ( connection[0] )  }
+              <Connection connection="{ connection[1] }"  connection_key="{connection[0]}" />
             {/each}
           {/if}
           <!--End of Children-->
