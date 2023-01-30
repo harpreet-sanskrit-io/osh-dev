@@ -1,3 +1,4 @@
+import { observeResize } from './observeResize';
 /**
  * Detects whether an element's content has horizontal overflow
  *
@@ -6,11 +7,9 @@
  * @returns True if element's content overflows
  */
 
-export function resizeElement(node) {
+export function onResizeElement(node) {
 	const handleResize = (event) => {
-		if (!node.contains(event.target)) {
-			node.dispatchEvent(new CustomEvent('resized'));
-		}
+		console.log(event.target);
 	};
 
 	node.addEventListener('resized', handleResize, true);
