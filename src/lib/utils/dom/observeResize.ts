@@ -1,4 +1,4 @@
-import { getWindow } from '$lib/utils/dom/getWindow';
+import { getWindow } from './getWindow';
 
 /**
  * Wrapper for ResizeObserver, with fallback for browsers that don't support ResizeObserver.
