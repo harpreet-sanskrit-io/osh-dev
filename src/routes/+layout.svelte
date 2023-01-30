@@ -36,6 +36,8 @@
   function openDrawer() {
     checked = true
   }
+
+  
  
 </script>
 
@@ -58,7 +60,7 @@
        <slot/>
        </div>
        <!--Footer-->
-       <SurrealUI/>
+      <!-- <SurrealUI/> -->
        <Footer/>
   </div>
   <!--Drawer Side
